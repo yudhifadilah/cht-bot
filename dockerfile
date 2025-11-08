@@ -1,26 +1,26 @@
-# Gunakan image Python yang lengkap (bukan slim)
-FROM python:3.12-bookworm
+# Gunakan base image Python 3.12
+FROM python:3.12-slim-bookworm
 
-# Set working directory di dalam container
+# Set working directory
 WORKDIR /app
 
-# Install dependency untuk build package Python seperti aiohttp
+# Install dependensi sistem untuk membangun paket Python (terutama aiohttp)
 RUN apt-get update && apt-get install -y \
-    build-essential \
+    gcc \
+    g++ \
+    make \
     libffi-dev \
     libssl-dev \
-    libjpeg-dev \
-    zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy semua file proyek ke dalam container
+# Copy semua file ke dalam container
 COPY . /app
 
-# Install dependencies Python
+# Install dependensi Python
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Expose port default (untuk bot yang juga punya webhook)
-EXPOSE 8080
+# Set environment agar log tidak di-buffer
+ENV PYTHONUNBUFFERED=1
 
-# Jalankan bot utama
+# Jalankan bot
 CMD ["python", "bot/main.py"]
